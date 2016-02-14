@@ -1,0 +1,55 @@
+@import url('./font.css');
+
+.rkaneko-theme {
+  background: #F5F5DC;
+  background-size: cover;
+  color: #003366;
+}
+
+.rkaneko-theme .important {
+  color: #B22222;
+}
+
+.rkaneko-theme table {
+  border-color: #00284d;
+  border-style: solid;
+  border-width: 2px;
+  margin: 16px;
+}
+
+.rkaneko-theme thead {
+  background-color: #00284d;
+  color: #fff;
+}
+
+.rkaneko-theme tbody {
+  background-color: #eeeeee;
+}
+
+.title-page {
+  background: #00284d;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.title-page .important {
+  color: #FFD700;
+}
+
+.paragraph-page {
+  background: #00284d;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.remark-code {
+  border-radius: 5px;
+}
+
+.footnote {
+  position: absolute;
+  bottom: 3em;
+  right: 3em;
+}
