@@ -1,3 +1,6 @@
 .DS_Store
 
 fonts/
+
+deck2pdf-0.3.1-SNAPSHOT/
+*.pdf
