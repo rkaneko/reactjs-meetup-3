@@ -28,7 +28,7 @@ class: title-page
 
 0. Intro
 
-0. React/Reduxにおける~~喜び~~・ツラみ
+0. React/Reduxにおける現場での~~喜び~~・ツラみ
 
   0. Ecosystemが絶賛成長中
 
@@ -105,7 +105,7 @@ class: paragraph-page
 
 + URL(state)を変更したい!
 
-→ actionをstoreにdispatchすべき?
+→ URLを変更するときはactionをstoreにdispatchすべき?
 
 ---
 
@@ -259,7 +259,7 @@ describe('test main', () => {
 class: paragraph-page
 
 ### package update時に
-### Testが動かなくなるのは辛い
+### Testが動かなくなるのはツラい
 ### ＼(^_^)／
 
 ---
@@ -309,7 +309,7 @@ export default entryShape;
 ```js
 import entryShape from 'path/2/entry-shape';
 
-export default SomeComponent extends Component {
+export default class SomeComponent extends Component {
   render() {
     // blahblah
   }
