@@ -27,196 +27,50 @@ class: title-page
 # Agenda
 
 0. Intro
-0. What's Redux in 1 min?
-0. Pros
-0. Cons
-0. How do we face Cons?
+
+0. React/Reduxにおける~~喜び~~・ツラみ
+
+  0. Ecosystemが絶賛成長中
+
+  0. ES6 ModulesとTesting
+
+  0. リファクタリングとPropTypes
 
 ---
 
 class: center
 
-### We implemented cybozu.com status dashboard using React/Redux!
+#### "cybozu.com稼働状況をReact/Reduxで作り直した話"
+
+http://blog.cybozu.io/entry/2015/11/04/080000
 
 <img src="img/cybozu-com-sdb.png" height="400"/>
 
-See also ["cybozu.com稼働状況をReact/Reduxで作り直した話"](http://blog.cybozu.io/entry/2015/11/04/080000)
+https://status.cybozu.com/
 
-???
+---
+class: center, middle
 
-今日はこのときの話と個人的にReact/Reduxを使っていて感じていることについて知見を共有できればと。
+# React/Reduxにおける
+# 現場での~~喜び~~・ツラみ
+
+喜びについては話しません.
+
+今日ここに来ている皆さんは喜び部分は知っていると思うので.
 
 ---
 class: paragraph-page
 
-# What's Redux in 1 min?
+## Ecosystemが絶賛成長中
 
 ---
+## Ecosystemが絶賛成長中
 
-background-image: url(img/flux-architecture.png)
++ SPAにおいて必要不可欠なrouter
 
----
++ React/Reduxにおけるデファクトのrouterは?
 
-background-image: url(img/redux-architecture.png)
-
----
-
-background-image: url(img/redux-architecture-2.png)
-
----
-
-# Pros
-
-+ Simplicity
-
-+ Dev tools
-
----
-
-## Simplicity
-
-### The separation of concerns
-
-+ Actions: The fact something happened.
-
-+ Reducers: Transition the state considering actions.
-
-+ Views: Just a rendering using props.
-
----
-
-## Simplicity
-
-### It's easy to implement along the one-way data flow.
-
-ex) fetch data asynchronously from the server
-
----
-
-### 1. define actions &amp; action creators
-
-```javascript
-export default function fetchTags() {
-  return dispatch => {
-    const endpoint = 'apis/entries/tags';
-    return invokeGetApi(endpoint)
-      .then(json => dispatch(receiveTags(json.payload)))
-      .catch(error => dispatch(receiveHttpError(error)));
-  };
-}
-```
-
----
-
-### 2. define the initial state
-
-```javascript
-const initialState = {
-  tags: [],
-};
-export initialState;
-```
-
----
-
-### 3. transition the state in reducers
-
-```javascript
-export default function entryReducer(state = initialState, action) {
-  const payload = action.payload;
-  switch (action.type) {
-    case ActionTypes.RECEIVE_TAGS:
-      return Object.assign({}, state, { tags: payload.tags });
-    default:
-      return state;
-  }
-}
-```
-
----
-
-### 4. define a container &amp; connect state &amp; action creators to props
-
-```javascript
-class App extends Component {
-  componentDidMount() {
-    const { fetchTags } = this.props;
-    fetchTags();
-  }
-  render() {
-    const { tags } = this.props;
-    return (
-      <div>
-        <Tags tags={tags}/>
-      </div>
-    );
-  }
-}
-
-function mapStateToProps(state) {
-  return state;
-}
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(ActionCreators, dispatch);
-}
-const WrappedApp = connect(mapStateToProps, mapDispatchToProps)(App);
-export default WrappedApp;
-```
-
----
-
-# example: tags
-
-.center[<img src="img/example-tags.png" height="100%"/>]
-
----
-
-# Dev tools
-
-@ [Troubleshooting / redux docs](http://redux.js.org/docs/Troubleshooting.html)
-
-.right[<img src="img/redux-troubleshooting-1.png" width="100%"/>]
-.right[<img src="img/redux-troubleshooting-2.png" width="100%"/>]
-.right[<img src="img/redux-troubleshooting-3.png" width="100%"/>]
-
----
-
-# Dev tools
-
-+ Never mutate reducer arguments
-
-  - ESLint - [no-param-reassign](http://eslint.org/docs/rules/no-param-reassign)
-  
-  - Copy utilities ex) `Object.assign`, lodash `merge`
-  
-  - `Object.assign`: 1 hierarchical deep copy
-  - lodash `merge`: 2 hierarchical deep copy
-
-
-+ Don't forget to call dispatch(action)
-
-  - [redux-logger](https://github.com/fcomb/redux-logger)
-.right[<img src="img/redux-logger.png" height="170"/>]
-
----
-
-# Cons
-
-+ The React/Redux ecosystem is under development.
-
-+ The restriction of keeping immutable state in redux async.
-
-+ Which tools should we choice for testing?
-
-+ PropTypes shows warnings at runtime.
-
----
-
-### The React/Redux ecosystem is under development.
-
-+ What's de facto standard React/Redux router library?
-
-|candidates|GitHub star|
+|libs|GitHub star|
 |:---:|:---:|
 |[react-router](https://github.com/reactjs/react-router)|10,695|
 |[react-router-redux](https://github.com/reactjs/react-router-redux) a few month ago [redux-simple-router](https://www.npmjs.com/package/redux-simple-router)|2,021|
@@ -224,68 +78,290 @@ export default WrappedApp;
 
 .right[counted on Feb 14, 2016]
 
+---
+### react-router
 
-+ I personally use .important[**react-router 1.0.x**].
++ 1.x → 2.x のupdateでbreaking changes有
 
-  - ∵ more simple and lower APIs than the others
+  - history instance がsingleton
+
+  - mixinsがdeprecatedに
+
+  - programmatic navigation のsignatureがsimpleに
+
++ v2.0.0 Upgrade Guide
+
+  - https://github.com/reactjs/react-router/blob/master/upgrade-guides/v2.0.0.md
+
+  - ドキュメントも豊富で、使いやすくなっているので◎
+
+---
+### Reduxにおいてrouterはどうあるべきか?
+
++ action: 何かが起こったというを説明するオブジェクト
+
+  - Three Principles @ redux docs
+  - http://redux.js.org/docs/introduction/ThreePrinciples.html
+
++ URL(state)を変更したい!
+
+→ actionをstoreにdispatchすべき?
 
 ---
 
-### The restriction of keeping immutable state in redux async.
+### reactjs/react-router-redux example
 
-In redux, you must not access the same property between different async actions.
-This is because the state will be sometimes broken.
+```js
+import { routeActions } from 'react-router-redux';
+
+// pushState() + dispatch action相当のことを行うAPI
+<Button onClick={() => dispatch(routeActions.push('/foo'));}/>
+```
+
+```js
+import { UPDATE_LOCATION } from 'react-router-redux';
+
+function someReducer(state, action) {
+  switch (action.type) {
+  case UPDATE_LOCATION:
+    // do something
+  }
+}
+```
 
 ---
+### デファクトのrouterは?
 
-### example
++ ひとつのことをうまくやるということでは、react-router v.2.x が良い.
 
-```javascript
-// TODO
+
+---
+class: paragraph-page
+
+## ES6 ModulesとTesting
+
+---
+class: center, middle
+
+#### ES6 Modules使ってますか?
+
+#### Testing librariesは何使ってますか?
+
+#### Unit testでmodulesのMockどうやってますか?
+
+---
+### 弊社のReactを使ったProjectでは...
+
++ ES6 Modules使ってますか?
+
+  - Yes
+
++ Testing librariesは何使ってますか?
+
+  - mocha
+  - power-assert + espower-babel + ES6
+  - jsdom
+
++ Unit testでのmodulesのMockどうやってますか?
+
+  - proxyquireを使っている
+
+  - https://github.com/thlorenz/proxyquire
+
+---
+### Babel6 shock
+
++ ES6 default exportのみで構成されるModuleをCommonJS形式でrequireするときは注意が必要
+
+```js
+// deps: a.js
+export default function a() {
+  console.log('Hello a!');
+}
+```
+
+```js
+// main: main.js
+const a = require('./a');
+
+export function main() {
+  // Babel5
+  a();
+  // Babel6
+  a.default();
+}
 ```
 
 ---
 
-### Which tools should we choice for testing?
+### Testでproxyquireを使っている場合にBabel shockに受ける影響
 
-+ testing framework?
-  - mocha, jest, ava
+以下の2つの場合でBabel5,Babel6で書き方を変えなければならない.
 
-+ bundle tool?
-  - browserify, webpack
++ production codeにES6 default exportのみで構成されるModuleをCommonJS形式でrequireしている箇所
 
-+ stubbing for ES6 Modules with Babel?
-  - proxyquire (only for browserify)
-  - jest
-  - babel-plugin-rewire???
++ テスト対象がdefault exportのみから構成され,かつテスト対象Moduleの依存ModuleをMockしたいとき
+
+---
+### Babel5
+
++ テスト対象: main.js(default exportのみで構成されるES6 Module)がa.js(default exportのみで構成されるES6 Module)に依存している場合
+
+```js
+import proxyquire from 'proxyquire';
+
+const aStub = function a() { console.log('Mock hello a!'); }
+
+// test target: main(default exportのみから構成されるES6 Module)
+const sut = proxyquire(
+  'path/2/main',
+  {
+    './a': aStub
+  }
+);
+
+describe('test main', () => {
+  it('mainがaに依存している', () => {
+    sut();
+  });
+});
+```
+
+---
+### Babel6
+
++ テスト対象: main.js(default exportのみで構成されるES6 Module)がa.js(default exportのみで構成されるES6 Module)に依存している場合
+
+```js
+import proxyquire from 'proxyquire';
+
+const aStub = {
+  // default exportのpathはdefaultに
+  default: function a() { console.log('Mock hello a!'); }
+};
+
+// test target: main(default exportのみから構成されるES6 Module)
+const sut = proxyquire(
+  'path/2/main',
+  {
+    './a': aStub
+  }
+).default;  // defaultが必要に
+
+describe('test main', () => {
+  it('mainがaに依存している', () => {
+    sut();
+  });
+});
+```
+
+---
+class: paragraph-page
+
+### package update時に
+### Testが動かなくなるのは辛い
+### ＼(^_^)／
 
 ---
 
-### In our project ...
+### @teppeis曰く
 
-+ browserify
+<img src="img/teppeis-es6-modules-1.png" width="100%"/>
+<img src="img/teppeis-es6-modules-2.png" width="100%"/>
 
-+ mocha
+---
+class: paragraph-page
 
-+ power-assert + espower-babel
-
-+ .important[(WIP) proxyquire]
+## リファクタリングとPropTypes
 
 ---
 
-### PropTypes shows warnings at runtime.
+## リファクタリングとPropTypes
 
-+ PropTypes are checked .important[at runtime].
+ソフトウェアの要件は常に変わっていくもので,当然React Componentのpropsも変化する.
 
-  - The "shape" of the props sometimes change (because changing server APIs response etc...).
-  - That's why PropTypes are not effective enough in the large scale app.
++ Componentで表示する内容の変更
+
++ サーバAPIのレスポンスの変更
+
++ etc
 
 ---
 
-# PropTypes in the future
+### PropTypes#shape
 
-<blockquote class="twitter-tweet" data-lang="ja"><p lang="en" dir="ltr">Don’t panic: PropTypes are not going to be removed for quite some time. Still, Flow is the longer term plan. <a href="https://t.co/9ydyQ0EiY9">https://t.co/9ydyQ0EiY9</a></p>&mdash; Dan Abramov (@dan_abramov) <a href="https://twitter.com/dan_abramov/status/697511436088668164">2016, 2月 10</a></blockquote>
-<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+shapeを作って,PropTypesの修正箇所を局所化することもできるが...
+
+```js
+import { PropTypes } from 'react';
+
+const entryShape = PropTypes.shape({
+  body: PropTypes.string.isRequired,
+  eid: PropTypes.number.isRequired,
+  permanentLink: PropTypes.string.isRequired,
+  postedAt: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  urlFirstImage: PropTypes.string.isRequired,
+});
+export default entryShape;
+```
+
+```js
+import entryShape from 'path/2/entry-shape';
+
+export default SomeComponent extends Component {
+  render() {
+    // blahblah
+  }
+}
+SomeComponent.propTypes = {
+  entries: PropTypes.arrayOf(entryShape).isRequired
+};
+```
+
+---
+### PropTypesはruntime check
+
++ 動かしてみないと,propsがきちんと渡ってきているか検証できない.
+
++ 静的解析やcompile timeにcheckしたい.
+
+---
+### PropTypes in the future
+
+.center[<img src="img/dan-abramov-told-proptypes-flow.png" height="100%"/>]
+
+.center[https://twitter.com/dan_abramov/status/697511436088668164]
+
+---
+### PropTypes in the future
+
+Facebook member sebmarkbage said on Feb 10th, 2016.
+
+.center[<img src="img/sebmarkbage-clarify-proptypes-flow.png" width="100%"/>]
+
+.center[https://github.com/facebook/react/issues/1833#issuecomment-182665824]
+
+---
+### PropTypes in the future
+
++ Flow使ってpropsのcheck試して見てる人もいる.
+
++ Replace React.PropTypes with Flow types #277
+
+  - https://github.com/facebook/flow/issues/277
+
+---
+class: paragraph-page
+
+# Conclusion
+
+---
+# Conclusion
+
++ React/FluxとそのEcosystemは進化中なのでそれなりにツラみもある.
+
++ React/Fluxにおけるメリットは捨てがたいので,ツラみ等知見を共有したい.
 
 ---
 
