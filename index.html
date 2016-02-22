@@ -39,7 +39,6 @@ class: title-page
 0. Conclusion
 
 ---
-
 class: center
 
 #### "cybozu.com稼働状況をReact/Reduxで作り直した話"
@@ -61,87 +60,25 @@ class: center, middle
 今日ここに来ている皆さんは喜び部分は知っていると思うので.
 
 ---
-class: paragraph-page
+class: center, middle
 
-## routerどれ使えば良い?
+### routerどれ使えば良い?
 
+### ES6 ModulesとTesting
 
+### リファクタリングとPropTypes
 ---
-## routerどれ使えば良い?
+class: center, middle
 
-+ SPAにおいて必要不可欠なrouter
+#### routerどれ使えば良い?
 
-+ React/Reduxにおけるデファクトのrouterは?
+→ react-routerが一番シンプル!
 
-|libs|GitHub star|
-|:---:|:---:|
-|[react-router](https://github.com/reactjs/react-router)|10,695|
-|[react-router-redux](https://github.com/reactjs/react-router-redux) a few month ago [redux-simple-router](https://www.npmjs.com/package/redux-simple-router)|2,021|
-|[redux-router](https://github.com/acdlite/redux-router)|1,484|
+### .important[ES6 ModulesとTesting]
 
-.right[counted on Feb 14, 2016]
+#### リファクタリングとPropTypes
 
----
-### react-router
-
-+ 1.x → 2.x のupdateでbreaking changes有
-
-  - history instance がsingleton
-
-  - mixinsがdeprecatedに
-
-  - programmatic navigation のsignatureがsimpleに
-
-  - etc
-
-+ v2.0.0 Upgrade Guide
-
-  - https://github.com/reactjs/react-router/blob/master/upgrade-guides/v2.0.0.md
-
-  - ドキュメントも豊富で、使いやすくなっているので◎
-
----
-### Reduxにおいてrouterはどうあるべきか?
-
-+ action: 何かが起こったというを説明するオブジェクト
-
-  - Three Principles @ redux docs
-  - http://redux.js.org/docs/introduction/ThreePrinciples.html
-
-+ URL(state)を変更したい!
-
-→ URLを変更するときはactionをstoreにdispatchすべき?
-
----
-
-### reactjs/react-router-redux example
-
-```js
-import { routeActions } from 'react-router-redux';
-
-// pushState() + dispatch action相当のことを行うAPI
-<Button onClick={() => dispatch(routeActions.push('/foo'));}/>
-```
-
-```js
-import { UPDATE_LOCATION } from 'react-router-redux';
-
-function someReducer(state, action) {
-  switch (action.type) {
-  case UPDATE_LOCATION:
-    // do something
-  }
-}
-```
-
----
-### デファクトのrouterは?
-
-+ ひとつのことをうまくやるということでは、react-router v.2.x が良い.
-
-+ reduxのrouterライブラリ系はaction dispatchまでやるが,ユースケースによっては使いづらいことがある.
-
-
+→ flowによるtype checkを待つ
 ---
 class: paragraph-page
 
@@ -283,90 +220,6 @@ class: paragraph-page
 
 + 未決定の仕様が多いので,将来修正が必要になる可能性がある.
 
-.center[ES2015,ES2016,ES.Next時代のModules Mockライブラリは]
-.center[このあたりの考慮が必要そう.]
-
----
-class: paragraph-page
-
-## リファクタリングとPropTypes
-
----
-
-## リファクタリングとPropTypes
-
-ソフトウェアの要件は常に変わっていくもので,当然React Componentのpropsも変化する.
-
-+ Componentで表示する内容の変更
-
-+ サーバAPIのレスポンスの変更
-
-+ etc
-
----
-
-### PropTypes#shape
-
-shapeを作って,PropTypesの修正箇所を局所化することもできるが...
-
-```js
-import { PropTypes } from 'react';
-
-const entryShape = PropTypes.shape({
-  body: PropTypes.string.isRequired,
-  eid: PropTypes.number.isRequired,
-  permanentLink: PropTypes.string.isRequired,
-  postedAt: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  urlFirstImage: PropTypes.string.isRequired,
-});
-export default entryShape;
-```
-
-```js
-import entryShape from 'path/2/entry-shape';
-
-export default class SomeComponent extends Component {
-  render() {
-    // blahblah
-  }
-}
-SomeComponent.propTypes = {
-  entries: PropTypes.arrayOf(entryShape).isRequired
-};
-```
-
----
-### PropTypesはruntime check
-
-+ 動かしてみないと,propsがきちんと渡ってきているか検証できない.
-
-+ 静的解析やcompile timeにcheckしたい.
-
----
-### PropTypes in the future
-
-.center[<img src="img/dan-abramov-told-proptypes-flow.png" height="100%"/>]
-
-.center[https://twitter.com/dan_abramov/status/697511436088668164]
-
----
-### PropTypes in the future
-
-Facebook member sebmarkbage said on Feb 10th, 2016.
-
-.center[<img src="img/sebmarkbage-clarify-proptypes-flow.png" width="100%"/>]
-
-.center[https://github.com/facebook/react/issues/1833#issuecomment-182665824]
-
----
-### PropTypes in the future
-
-+ Flow使ってpropsのcheck試して見てる人もいる.
-
-+ Replace React.PropTypes with Flow types #277
-
-  - https://github.com/facebook/flow/issues/277
 
 ---
 class: paragraph-page
@@ -376,9 +229,15 @@ class: paragraph-page
 ---
 # Conclusion
 
-+ React/FluxとそのEcosystemは進化中なのでそれなりにツラみもある.
++ 技術の導入は,相性や順番に戦略が必要.
 
-+ React/Fluxにおけるメリットは捨てがたいので,ツラみ等知見を共有したい.
+  - 例えばBabel6移行とMockライブラリの導入を考える場合は先にBabel6対応したほうが良いかも.
+
+  - ES6 Modulesのご利用は計画的に.
+
++ ES2015,ES2016,ES.Next時代のModules Mockライブラリはこのあたりの考慮が必要そう.
+
++ React/Fluxにおけるメリットは捨てがたいのでツラみ等知見を共有したい.
 
 ---
 class: center, middle
