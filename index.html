@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>React/Redux pros &amp; cons</title>
+    <title>React.js meetup #3 LT</title>
     <meta charset="utf-8">
     <link href="./css/index.css" rel="stylesheet" type="text/css">
   </head>
@@ -30,11 +30,13 @@ class: title-page
 
 0. React/Reduxにおける現場での~~喜び~~・ツラみ
 
-  0. Ecosystemが絶賛成長中
+  0. routerどれ使えば良い?
 
   0. ES6 ModulesとTesting
 
   0. リファクタリングとPropTypes
+
+0. Conclusion
 
 ---
 
@@ -61,10 +63,11 @@ class: center, middle
 ---
 class: paragraph-page
 
-## Ecosystemが絶賛成長中
+## routerどれ使えば良い?
+
 
 ---
-## Ecosystemが絶賛成長中
+## routerどれ使えば良い?
 
 + SPAにおいて必要不可欠なrouter
 
@@ -88,6 +91,8 @@ class: paragraph-page
   - mixinsがdeprecatedに
 
   - programmatic navigation のsignatureがsimpleに
+
+  - etc
 
 + v2.0.0 Upgrade Guide
 
@@ -133,6 +138,8 @@ function someReducer(state, action) {
 ### デファクトのrouterは?
 
 + ひとつのことをうまくやるということでは、react-router v.2.x が良い.
+
++ reduxのrouterライブラリ系はaction dispatchまでやるが,ユースケースによっては使いづらいことがある.
 
 
 ---
@@ -182,13 +189,14 @@ export default function a() {
 
 ```js
 // main: main.js
+
+// Babel5
 const a = require('./a');
+// Babel6
+const a = require('./a').default;
 
 export function main() {
-  // Babel5
   a();
-  // Babel6
-  a.default();
 }
 ```
 
@@ -268,6 +276,15 @@ class: paragraph-page
 
 <img src="img/teppeis-es6-modules-1.png" width="100%"/>
 <img src="img/teppeis-es6-modules-2.png" width="100%"/>
+
++ 現状BabelはCommonJS方式にトランスパイルする.
+
++ ES6 Modulesで書いても,結局Browserifyするので今のところメリットない.
+
++ 未決定の仕様が多いので,将来修正が必要になる可能性がある.
+
+.center[ES2015,ES2016,ES.Next時代のModules Mockライブラリは]
+.center[このあたりの考慮が必要そう.]
 
 ---
 class: paragraph-page
@@ -362,6 +379,17 @@ class: paragraph-page
 + React/FluxとそのEcosystemは進化中なのでそれなりにツラみもある.
 
 + React/Fluxにおけるメリットは捨てがたいので,ツラみ等知見を共有したい.
+
+---
+class: center, middle
+
+### WE ARE HIRING!
+
+<img src="img/we-are-hiring.png" width="100%"/>
+
+Cybozu, Incではfront-end engineersを募集しています!
+
+http://cybozu.co.jp/company/job/recruitment/
 
 ---
 
