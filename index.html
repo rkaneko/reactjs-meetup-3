@@ -49,6 +49,8 @@ http://blog.cybozu.io/entry/2015/11/04/080000
 
 https://status.cybozu.com/
 
+#### Released on Feb 18th, 2016!
+
 ---
 class: center, middle
 
@@ -132,20 +134,39 @@ const a = require('./a');
 // Babel6
 const a = require('./a').default;
 
-export function main() {
+export default function main() {
   a();
 }
 ```
 
 ---
 
-### Testでproxyquireを使っている場合にBabel shockに受ける影響
+### Testでproxyquireを使っている場合
 
-以下の2つの場合でBabel5,Babel6で書き方を変えなければならない.
+先ほどのBabel6 shockに受ける影響に加えて次の場合でもBabel5,Babel6で書き方を変えなければならない.
 
-+ production codeにES6 default exportのみで構成されるModuleをCommonJS形式でrequireしている箇所
++ .important[テスト対象がdefault exportのみから構成され,かつテスト対象Moduleの依存ModuleをMockしたいとき]
 
-+ テスト対象がdefault exportのみから構成され,かつテスト対象Moduleの依存ModuleをMockしたいとき
+```js
+// deps: a.js
+export default function a() {
+  console.log('Hello a!');
+}
+```
+
+```js
+// main: main.js
+
+// Babel5
+const a = require('./a');
+// Babel6
+const a = require('./a').default;
+
+// default exportのみから構成されるModuleの依存a()をMockしたいとき
+export default function main() {
+  a();
+}
+```
 
 ---
 ### Babel5
@@ -244,7 +265,7 @@ class: center, middle
 
 ### WE ARE HIRING!
 
-<img src="img/we-are-hiring.png" width="100%"/>
+<img src="img/kaizen-gassyuku.jpg" height="360px"/>
 
 Cybozu, Incではfront-end engineersを募集しています!
 
