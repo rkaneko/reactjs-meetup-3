@@ -50,6 +50,7 @@ http://blog.cybozu.io/entry/2015/11/04/080000
 
 https://status.cybozu.com/
 
+#### Released on Feb 18th, 2016!
 ---
 class: center, middle
 
@@ -119,7 +120,7 @@ class: paragraph-page
 ```js
 import { routeActions } from 'react-router-redux';
 
-// pushState() + dispatch action相当のことを行うAPI
+// action creatorでactionを作って,storeにdispatch
 <Button onClick={() => dispatch(routeActions.push('/foo'));}/>
 ```
 
@@ -199,16 +200,34 @@ export function main() {
   a();
 }
 ```
-
 ---
 
-### Testでproxyquireを使っている場合にBabel shockに受ける影響
+### Testでproxyquireを使っている場合
 
-以下の2つの場合でBabel5,Babel6で書き方を変えなければならない.
+先ほどのBabel6 shockに受ける影響に加えて次の場合でもBabel5,Babel6で書き方を変えなければならない.
 
-+ production codeにES6 default exportのみで構成されるModuleをCommonJS形式でrequireしている箇所
++ .important[テスト対象がdefault exportのみから構成され,かつテスト対象Moduleの依存ModuleをMockしたいとき]
 
-+ テスト対象がdefault exportのみから構成され,かつテスト対象Moduleの依存ModuleをMockしたいとき
+```js
+// deps: a.js
+export default function a() {
+  console.log('Hello a!');
+}
+```
+
+```js
+// main: main.js
+
+// Babel5
+const a = require('./a');
+// Babel6
+const a = require('./a').default;
+
+// default exportのみから構成されるModuleの依存a()をMockしたいとき
+export default function main() {
+  a();
+}
+```
 
 ---
 ### Babel5
@@ -282,9 +301,6 @@ class: paragraph-page
 + ES6 Modulesで書いても,結局Browserifyするので今のところメリットない.
 
 + 未決定の仕様が多いので,将来修正が必要になる可能性がある.
-
-.center[ES2015,ES2016,ES.Next時代のModules Mockライブラリは]
-.center[このあたりの考慮が必要そう.]
 
 ---
 class: paragraph-page
@@ -362,7 +378,7 @@ Facebook member sebmarkbage said on Feb 10th, 2016.
 ---
 ### PropTypes in the future
 
-+ Flow使ってpropsのcheck試して見てる人もいる.
++ Flow使ってpropsのcheck試してる人もいる.
 
 + Replace React.PropTypes with Flow types #277
 
@@ -376,9 +392,19 @@ class: paragraph-page
 ---
 # Conclusion
 
-+ React/FluxとそのEcosystemは進化中なのでそれなりにツラみもある.
++ Reactにおけるrouterは現状react-router2.xが良い.
 
-+ React/Fluxにおけるメリットは捨てがたいので,ツラみ等知見を共有したい.
+  - わざわざReduxの世界のrouterまで踏み込むメリットは薄い.
+
++ 技術の導入は,相性や順番に戦略が必要.
+
+  - 例えばBabel6移行とMockライブラリの導入を考える場合は先にBabel6対応したほうが良いかも.
+
+  - ES6 Modulesのご利用は計画的に.
+
++ ES2015,ES2016,ES.Next時代のModules Mockライブラリには既存のMockとES6 ModulesのMockの仕組みの考慮が必要そう.
+
++ React/Fluxにおけるメリットは捨てがたいのでツラみ等知見を共有したい.
 
 ---
 class: center, middle
